@@ -1,0 +1,83 @@
+{% extends "pasteleria/base.html" %}
+
+{% block title %}Catálogo | Pastelería{% endblock %}
+
+{% block content %}
+    <div class="mb-4">
+        <h1 class="display-6 fw-bold">Nuestro catálogo</h1>
+        <p class="text-body-secondary">
+            Descubre nuestros productos disponibles.
+        </p>
+    </div>
+
+    <form method="get" class="row g-3 mb-5" role="search">
+        <div class="col-md-6">
+            <label for="busqueda" class="form-label">Buscar por nombre</label>
+            <input
+                type="search"
+                class="form-control"
+                id="busqueda"
+                name="q"
+                value="{{ busqueda }}"
+                placeholder="Ejemplo: torta de chocolate"
+            >
+        </div>
+        <div class="col-md-4">
+            <label for="linea" class="form-label">Filtrar por línea</label>
+            <select class="form-select" id="linea" name="linea">
+                <option value="">Todas las líneas</option>
+                {% for linea in lineas %}
+                    <option
+                        value="{{ linea.id }}"
+                        {% if linea_seleccionada == linea.id|stringformat:"s" %}selected{% endif %}
+                    >
+                        {{ linea.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">
+                Buscar
+            </button>
+        </div>
+    </form>
+
+    {% if productos %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for producto in productos %}
+                <div class="col">
+                    <article class="card h-100 shadow-sm">
+                        {% if producto.fotografia %}
+                            <img
+                                src="{{ producto.fotografia.url }}"
+                                class="card-img-top"
+                                alt="{{ producto.nombre }}"
+                                style="height: 220px; object-fit: cover;"
+                            >
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <p class="card-text text-body-secondary mb-1">
+                                {{ producto.linea.nombre }}
+                            </p>
+                            <h2 class="h5 card-title">{{ producto.nombre }}</h2>
+                            <p class="card-text fs-5 fw-bold mt-auto">
+                                ${{ producto.precio|floatformat:0 }} CLP
+                            </p>
+                            <a
+                                href="{% url 'detalle_producto' producto.id %}"
+                                class="btn btn-outline-primary"
+                            >
+                                Ver detalle
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="status">
+            No encontramos productos disponibles con los filtros seleccionados.
+        </div>
+    {% endif %}
+{% endblock %}

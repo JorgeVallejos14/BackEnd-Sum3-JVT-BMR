@@ -1,0 +1,1 @@
+Se utilizo COPILOT, para poder ser orientado en como hacer la parte 5 y se uso en el archivo pasteleria/views.py, config/urls.py y los archivos .html (Base.html, catalogo.html y detalle_producto.html) - Jorge Vallejos
