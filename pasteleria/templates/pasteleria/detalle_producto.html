@@ -1,63 +1,117 @@
+
 {% extends "pasteleria/base.html" %}
 
-{% block title %}{{ producto.nombre }} | Pastelería{% endblock %}
+{% block title %}
+{{ producto.nombre }} | Pastelería
+{% endblock %}
 
 {% block content %}
-    <div class="mb-4">
-        <a href="{% url 'catalogo' %}" class="btn btn-link px-0">
-            &larr; Volver al catálogo
-        </a>
+
+<div class="mb-4">
+    <a href="{% url 'catalogo' %}" class="btn btn-link px-0">
+        &larr; Volver al catálogo
+    </a>
+</div>
+
+<article class="row g-4">
+
+    <div class="col-md-6">
+
+        {% if producto.fotografia %}
+            <img
+                src="{{ producto.fotografia.url }}"
+                class="img-fluid rounded shadow-sm w-100"
+                alt="{{ producto.nombre }}"
+            >
+        {% else %}
+            <div class="bg-body-secondary rounded p-5 text-center">
+                Sin fotografía disponible
+            </div>
+        {% endif %}
+
     </div>
 
-    <article class="row g-4">
-        <div class="col-md-6">
-            {% if producto.fotografia %}
-                <img
-                    src="{{ producto.fotografia.url }}"
-                    class="img-fluid rounded shadow-sm w-100"
-                    alt="{{ producto.nombre }}"
-                >
-            {% else %}
-                <div class="bg-body-secondary rounded d-flex align-items-center justify-content-center"
-                     style="min-height: 320px;">
-                    <span class="text-body-secondary">Sin fotografía disponible</span>
-                </div>
-            {% endif %}
-        </div>
+    <div class="col-md-6">
 
-        <div class="col-md-6">
-            <p class="text-body-secondary mb-1">{{ producto.linea.nombre }}</p>
-            <h1 class="display-6 fw-bold">{{ producto.nombre }}</h1>
-            <p class="fs-3 fw-bold text-primary">
-                ${{ producto.precio|floatformat:0 }} CLP
+        <p class="text-body-secondary">
+            {{ producto.linea.nombre }}
+        </p>
+
+        <h1 class="display-6 fw-bold">
+            {{ producto.nombre }}
+        </h1>
+
+        <p class="fs-3 fw-bold text-primary">
+            {{ precio_clp }} CLP
+        </p>
+
+        <h2 class="h5">Descripción</h2>
+
+        <p>
+            {{ producto.descripcion|linebreaksbr }}
+        </p>
+
+        <dl class="row">
+
+            <dt class="col-sm-5">Porciones</dt>
+            <dd class="col-sm-7">{{ producto.porciones }}</dd>
+
+            <dt class="col-sm-5">Apto para celíacos</dt>
+            <dd class="col-sm-7">
+                {% if producto.apto_celiacos %}
+                    Sí
+                {% else %}
+                    No
+                {% endif %}
+            </dd>
+
+            <dt class="col-sm-5">Stock disponible</dt>
+            <dd class="col-sm-7">
+                {{ producto.stock }}
+            </dd>
+
+        </dl>
+
+        <hr>
+
+        {% if producto.stock > 0 %}
+
+            <h2 class="h4">Realizar encargo</h2>
+
+            <p>
+                Completa tus datos para retirar tu pedido
+                en nuestra pastelería.
             </p>
 
-            <div class="mb-4">
-                <h2 class="h5">Descripción</h2>
-                <p>{{ producto.descripcion|linebreaksbr }}</p>
+            <form
+                method="post"
+                action="{% url 'crear_encargo' producto.id %}"
+            >
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Confirmar encargo
+                </button>
+            </form>
+
+        {% else %}
+
+            <div class="alert alert-warning">
+                <strong>Agotado por hoy</strong>
+                <p class="mb-0">
+                    Este producto no tiene unidades disponibles.
+                </p>
             </div>
 
-            <dl class="row">
-                <dt class="col-sm-5">Porciones</dt>
-                <dd class="col-sm-7">{{ producto.porciones }}</dd>
+        {% endif %}
 
-                <dt class="col-sm-5">Apto para celíacos</dt>
-                <dd class="col-sm-7">
-                    {% if producto.apto_celiacos %}Sí{% else %}No{% endif %}
-                </dd>
+    </div>
 
-                <dt class="col-sm-5">Stock disponible</dt>
-                <dd class="col-sm-7">{{ producto.stock }}</dd>
+</article>
 
-                <dt class="col-sm-5">Disponibilidad</dt>
-                <dd class="col-sm-7">
-                    {% if producto.disponible %}
-                        <span class="badge text-bg-success">Disponible</span>
-                    {% else %}
-                        <span class="badge text-bg-secondary">No disponible</span>
-                    {% endif %}
-                </dd>
-            </dl>
-        </div>
-    </article>
 {% endblock %}
